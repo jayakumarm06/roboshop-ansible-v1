@@ -52,7 +52,7 @@
 
     - name: delete ec2 instances
       amazon.aws.ec2_instance:
-        state: present
+        state: absent
         name: "roboshop-{{ item }}"
         region: us-east-1
         wait: false
