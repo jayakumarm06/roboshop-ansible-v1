@@ -1,0 +1,53 @@
+- name: configure dispatch server
+  hosts: dispatch
+  become: yes
+  tasks:
+    - name: Install golang
+      package:
+        name: golang
+        state: present
+
+    - name: Create user
+      user:
+        name: roboshop
+
+    - name: Create a directory if it doesnot exist
+      file:
+        path: /app
+        state: directory
+
+    - name: Download zip file using curl
+      command: curl -L -o /tmp/dispatch.zip https://raw.githubusercontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/dispatch-v4.zip
+      creates: /tmp/dispatch.zip
+
+    - name: unzip a file to a app folder
+      unarchive:
+        src: /tmp/dispatch.zip
+        dest: /app
+        remote_src: yes
+
+    - name: Build application
+      shell: go build -o dispatch .
+      args:
+        chdir: /app
+
+    - name: copy dispatch service
+      copy:
+        src: dispatch.service
+        dest: /etc/systemd/system/dispatch.service
+
+    - name: configure the systemd file
+      replace:
+        path: /etc/systemd/system/dispatch.service
+        regexp: "<RABBITMQ-SERVER-IPADDRESS>"
+        replace: "rabbitmq.dewsecopai.online"
+
+    - name: force systemd to reload configuration
+      systemd_service:
+        daemon_reload: true
+
+    - name: start and enable dispatch
+      service:
+        name: dispatch
+        state: started
+        enabled: yes

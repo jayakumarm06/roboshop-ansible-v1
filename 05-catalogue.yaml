@@ -1,0 +1,83 @@
+- name: configure catalogue server
+  hosts: catalogue
+  become: yes
+  tasks:
+    - name: enable node-js 24
+      command: dnf module enable nodejs:24 -y
+
+    - name: Install catalogue
+      package:
+        name: nodejs
+        state: present
+
+    - name: Create user
+      user:
+        name: roboshop
+
+    - name: Create a directory if it doesnot exist
+      file:
+        path: /app
+        state: directory
+
+    - name: Download zip file using curl
+      command: curl -L -o /tmp/catalogue.zip https://raw.githubusercontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/catalogue-v4.zip
+      creates: /tmp/catalogue.zip
+
+    - name: unzip a file to a app folder
+      unarchive:
+        src: /tmp/catalogue.zip
+        dest: /app
+        remote_src: yes
+
+    - name: Install catalogue
+      community.general.npm:
+        path: /app
+        state: present
+
+    - name: copy catalogue service
+      copy:
+        src: catalogue.service
+        dest: /etc/systemd/system/catalogue.service
+
+    - name: allow remote connections to service file
+      replace:
+        path: /etc/systemd/system/catalogue.service
+        regexp: "<MONGODB-SERVER-IPADDRESS>"
+        replace: "mongodb.dewsecopai.online"
+
+    - name: force systemd to reload configuration
+      systemd_service:
+        daemon_reload: true
+
+    - name: start and enable catalogue
+      service:
+        name: catalogue
+        state: started
+        enabled: yes
+
+    - name: copy mongo client server
+      copy:
+        src: mongo.repo
+        dest: /etc/yum.repos.d/mongo.repo
+
+    - name: Install mongodb-mongosh
+      package:
+        name: mongodb-mongosh
+        state: present
+
+    - name: excecute make inside a target direcotry
+      command:
+        chdir: /app/db/master-data.js
+
+    - name: Excute load-data using mongosh
+      command: mongosh --host mongodb.dewsecopai.online </app/db/master-data.js
+      register: mongo_output
+
+    - name: Show mongoDb output
+      debug:
+        msg: "{{ mongo_output }}"
+
+    # - name: restart catalogue
+    #   service:
+    #     name: catalogue
+    #     state: restarted

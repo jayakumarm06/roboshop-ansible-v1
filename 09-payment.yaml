@@ -1,0 +1,70 @@
+- name: configure payment server
+  hosts: payment
+  become: yes
+  tasks:
+    - name: Install python & pip 3.14
+      package:
+        name:
+          - python3.14
+          - python3.14-pip
+        state: present
+
+    - name: Create user
+      user:
+        name: roboshop
+
+    - name: Create a directory if it doesnot exist
+      file:
+        path: /app
+        state: directory
+
+    - name: Download zip file using curl
+      command: curl -L -o /tmp/payment.zip https://raw.githubusercontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/payment-v4.zip
+      creates: /tmp/payment.zip
+
+    - name: unzip a file to a app folder
+      unarchive:
+        src: /tmp/payment.zip
+        dest: /app
+        remote_src: yes
+
+    - name: Create virtual environment
+      command: python3.14 -m venv /app/.venv
+
+    - name: Install specified python requirements in indicated (virtualenv)
+      pip:
+        requirements: requirements.txt
+        virtualenv: /app/.venv/bin/
+
+    - name: copy payment systemd service
+      copy:
+        src: payment.service
+        dest: /etc/systemd/system/payment.service
+
+    - name: change the cart service domain_name in payment service file
+      replace:
+        path: /etc/systemd/system/payment.service
+        regexp: "<CART-SERVER-IPADDRESS>"
+        replace: "cart.dewsecopai.online"
+
+    - name: change the user service domain_name in payment service file
+      replace:
+        path: /etc/systemd/system/payment.service
+        regexp: "<USER-SERVER-IPADDRESS>"
+        replace: "user.dewsecopai.online"
+
+    - name: change the rabbitmq service domain_name in payment service file
+      replace:
+        path: /etc/systemd/system/payment.service
+        regexp: "<RABBITMQ-SERVER-IPADDRESS>"
+        replace: "rabbitmq.dewsecopai.online"
+
+    - name: force systemd to reload configuration
+      systemd_service:
+        daemon_reload: true
+
+    - name: start and enable payment
+      service:
+        name: payment
+        state: started
+        enabled: yes

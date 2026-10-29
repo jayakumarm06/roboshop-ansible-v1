@@ -1,0 +1,95 @@
+- name: configure shipping server
+  hosts: shipping
+  become: yes
+  tasks:
+    - name: enable maven:3.9
+      command: dnf module enable maven:3.9 -y
+
+    - name: Install maven & java
+      package:
+        name:
+          - maven
+          - java-25-openjdk-devel
+        state: present
+
+    - name: Create JAVA_HOME path
+      shell: echo "export JAVA_HOME=$(dirname $(dirname $(readlink -f /usr/bin/java)))" > /etc/profile.d/java.sh
+
+    - name: Create user
+      user:
+        name: roboshop
+
+    - name: Create a directory if it doesnot exist
+      file:
+        path: /app
+        state: directory
+
+    - name: Download zip file using curl
+      command: curl -L -o /tmp/shipping.zip https://raw.githubusercontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/shipping-v4.zip
+      creates: /tmp/shipping.zip
+
+    - name: unzip a file to a app folder
+      unarchive:
+        src: /tmp/shipping.zip
+        dest: /app
+        remote_src: yes
+
+    - name: Build application
+      shell: mvn clean package
+      args:
+        chdir: /app
+
+    - name: move jar
+      command: mv target/shipping.jar shipping.jar
+
+    - name: Install mysql
+      package:
+        name: mysql
+        state: present
+
+    - name: excecute make inside a target direcotry
+      command:
+        chdir: /app/db/master-data.sql
+
+    - name: Excute load-data using mysql
+      command: mysql -h mysql.dewsecopai.online -uroot -pRoboShop@1 < /app/db/master-data.sql
+      register: mysql_cities_output
+
+    - name: Show mysql cities output
+      debug:
+        msg: "{{ mysql_cities_output }}"
+
+    - name: Excute load-data using mysql
+      command: mysql -h mysql.dewsecopai.online -uroot -pRoboShop@1 < /app/db/app-user.sql
+      register: mysql_output
+
+    - name: Show mysql output
+      debug:
+        msg: "{{ mysql_output }}"
+
+    - name: copy shipping service
+      copy:
+        src: shipping.service
+        dest: /etc/systemd/system/shipping.service
+
+    - name: allow remote connections to service file
+      replace:
+        path: /etc/systemd/system/shipping.service
+        regexp: "<CART-SERVER-IPADDRESS>"
+        replace: "cart.dewsecopai.online"
+
+    - name: change the mysql domain_name in shipping service file
+      replace:
+        path: /etc/systemd/system/shipping.service
+        regexp: "<MYSQL-SERVER-IPADDRESS>"
+        replace: "mysql.dewsecopai.online"
+
+    - name: force systemd to reload configuration
+      systemd_service:
+        daemon_reload: true
+
+    - name: start and enable shipping
+      service:
+        name: shipping
+        state: started
+        enabled: yes

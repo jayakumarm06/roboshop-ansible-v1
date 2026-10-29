@@ -14,6 +14,19 @@
     # ansible-playbook roboshop.yaml -e '{"actions":"delete","instances":["rabbitmq"]}'
 
     instances: ["mongodb", "redis", "mysql", "rabbitmq"]
+    #ansible-playbook roboshop.yaml -e '{"instances":["catalogue"]}'
+    # ansible-playbook roboshop.yaml -e actions="delete" -e '{"instances":["catalogue"]}'
+    # ansible-playbook roboshop.yaml -e '{"actions":"delete","instances":["catalogue"]}'
+    # ansible-playbook roboshop.yaml -e '{"instances":["user"]}'
+    # ansible-playbook roboshop.yaml -e '{"actions":"delete","instances":["user"]}'
+    # ansible-playbook roboshop.yaml -e '{"instances":["cart"]}'
+    # ansible-playbook roboshop.yaml -e '{"actions":"delete","instances":["cart"]}'
+    # ansible-playbook roboshop.yaml -e '{"instances":["shipping"]}'
+    # ansible-playbook roboshop.yaml -e '{"actions":"delete","instances":["shipping"]}'
+    # ansible-playbook roboshop.yaml -e '{"instances":["payment"]}'
+    # ansible-playbook roboshop.yaml -e '{"actions":"delete","instances":["payment"]}'
+
+    # instances: ["catalogue", "user", "cart", "shipping", "payment", "dispatch"]
     actions: create
     domain_name: dewsecopai.online
     ami_id: ami-0055977a6e828a4f4

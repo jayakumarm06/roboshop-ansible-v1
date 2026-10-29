@@ -1,0 +1,62 @@
+- name: configure cart server
+  hosts: cart
+  become: yes
+  tasks:
+    - name: enable node-js 24
+      command: dnf module enable nodejs:24 -y
+
+    - name: Install cart
+      package:
+        name: nodejs
+        state: present
+
+    - name: Create cart
+      cart:
+        name: roboshop
+
+    - name: Create a directory if it doesnot exist
+      file:
+        path: /app
+        state: directory
+
+    - name: Download zip file using curl
+      command: curl -L -o /tmp/cart.zip https://raw.githubcartcontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/cart-v4.zip
+      creates: /tmp/cart.zip
+
+    - name: unzip a file to a app folder
+      unarchive:
+        src: /tmp/cart.zip
+        dest: /app
+        remote_src: yes
+
+    - name: Install cart
+      community.general.npm:
+        path: /app
+        state: present
+
+    - name: copy cart service
+      copy:
+        src: cart.service
+        dest: /etc/systemd/system/cart.service
+
+    - name: configure systemD serive for redis
+      lineinfile:
+        path: /etc/systemd/system/cart.service
+        regexp: "^#?<REDIS-SERVER-IPADDRESS>"
+        line: "redis.dewsecopai.online"
+
+    - name: configure systemD serive for mongodb
+      lineinfile:
+        path: /etc/systemd/system/cart.service
+        regexp: "^#?<CATALOGUE-SERVER-IPADDRESS>"
+        line: "catalogue.dewsecopai.online"
+
+    - name: force systemd to reload configuration
+      systemd_service:
+        daemon_reload: true
+
+    - name: start and enable cart
+      service:
+        name: cart
+        state: started
+        enabled: yes

@@ -1,0 +1,44 @@
+- name: configure frontend server
+  hosts: frontend
+  become: yes
+  tasks:
+    - name: enable nginx 1.26
+      command: dnf module enable nginx:1.26 -y
+
+    - name: Install nginx
+      package:
+        name: nginx
+        state: present
+
+    - name: start and enable nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Remove all files
+      shell: rm -rf /usr/share/nginx/html/*
+
+    - name: Download zip file using curl
+      command: curl -L -o /tmp/frontend.zip https://raw.githubfrontendcontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/frontend-v4.zip
+      creates: /tmp/frontend.zip
+
+    - name: unzip a file to a app folder
+      unarchive:
+        src: /tmp/frontend.zip
+        dest: /usr/share/nginx/html
+        remote_src: yes
+
+    - name: copy configuration file
+      copy:
+        src: roboshop.conf
+        dest: /etc/nginx/default.d/roboshop.conf
+
+    ########################################
+
+    ###################################################
+
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
