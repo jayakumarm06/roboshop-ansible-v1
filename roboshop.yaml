@@ -6,7 +6,7 @@
     #ansible-playbook roboshop.yaml -e '{"instances":["mongodb"]}'
 
     instances: ["mongodb", "redis", "mysql", "rabbitmq"]
-    action_s: create
+    actions: create
     domain_name: dewsecopai.online
     ami_id: ami-0055977a6e828a4f4
 
@@ -21,7 +21,7 @@
           - "roboshop-{{ item }}"
         region: us-east-1
       loop: "{{ instances }}"
-      when: action_s == "create"
+      when: actions == "create"
       register: ec2_output
 
     # - name: Print ec2 creation output
@@ -38,4 +38,23 @@
         value: "{{ item.instances[0].private_ip_address }}"
         overwrite: true
       loop: "{{ ec2_output.results }}"
-      when: action_s == "create"
+      when: actions == "create"
+
+    - name: delete Route53 records
+      amazon.aws.route53:
+        state: absent
+        zone: "{{ domain_name }}"
+        record: "{{ item }}.{{ domain_name }}"
+        type: A
+        ttl: 1
+      loop: "{{ instances }}"
+      when: actions == "delete"
+
+    - name: delete ec2 instances
+      amazon.aws.ec2_instance:
+        state: present
+        name: "roboshop-{{ item }}"
+        region: us-east-1
+        wait: false
+      loop: "{{ instances }}"
+      when: actions == "delete"
