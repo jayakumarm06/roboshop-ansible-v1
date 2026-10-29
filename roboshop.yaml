@@ -6,7 +6,10 @@
     #ansible-playbook roboshop.yaml -e '{"instances":["mongodb"]}'
     # ansible-playbook roboshop.yaml -e actions="delete" -e '{"instances":["mongodb"]}'
     # ansible-playbook roboshop.yaml -e '{"actions":"delete","instances":["mongodb"]}'
-    #ansible-playbook roboshop.yaml -e '{"instances":["redis"]}'
+    # ansible-playbook roboshop.yaml -e '{"instances":["redis"]}'
+    # ansible-playbook roboshop.yaml -e '{"actions":"delete","instances":["redis"]}'
+    # ansible-playbook roboshop.yaml -e '{"instances":["mysql"]}'
+    # ansible-playbook roboshop.yaml -e '{"actions":"delete","instances":["mysql"]}'
 
     instances: ["mongodb", "redis", "mysql", "rabbitmq"]
     actions: create
