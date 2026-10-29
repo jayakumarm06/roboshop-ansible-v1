@@ -24,17 +24,17 @@
       when: action_s == "create"
       register: ec2_output
 
-    - name: Print ec2 creation output
-      debug:
-        msg: "{{ ec2_output }}"
+    # - name: Print ec2 creation output
+    #   debug:
+    #     msg: "{{ ec2_output }}"
 
-    # - name: create Route53 record
-    #   amazon.aws.route53:
-    #     state: present
-    #     zone: "{{ domain_name }}"
-    #     record: "{{ item }}.{{ domain_name }}" # mongodb.dewsecopai.online
-    #     type: A
-    #     value: "{{ item.instances[0].private_ip_address }}"
-    #     overwrite: true
-    #   loop: "{{ ec2_output.results }}"
-    #   when: action_s == "create"
+    - name: create Route53 record
+      amazon.aws.route53:
+        state: present
+        zone: "{{ domain_name }}"
+        record: "{{ item }}.{{ domain_name }}" # mongodb.dewsecopai.online
+        type: A
+        value: "{{ item.instances[0].private_ip_address }}"
+        overwrite: true
+      loop: "{{ ec2_output.results }}"
+      when: action_s == "create"
