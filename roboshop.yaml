@@ -3,8 +3,10 @@
   connection: local
 
   vars:
-    instances: ["mongodb", "redis", "mysql"] #  ,"rabbitmq"]
-    action: create
+    #ansible-playbook roboshop.yaml -e '{"instances":["mongodb"]}'
+
+    instances: ["mongodb", "redis", "mysql", "rabbitmq"]
+    action_s: create
     domain_name: dewsecopai.online
     ami_id: ami-0055977a6e828a4f4
 
@@ -19,4 +21,4 @@
           - "roboshop-{{ item }}"
         region: us-east-1
       loop: "{{ instances }}"
-      when: action == "create"
+      when: action_s == "create"
