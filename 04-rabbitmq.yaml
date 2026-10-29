@@ -25,10 +25,10 @@
       register: user_output
       ignore_errors: true
 
-    - name: print the ouput
-      debug:
-        msg: "{{ user_output }}"
+    # - name: print the ouput
+    #   debug:
+    #     msg: "{{ user_output }}"
 
     - name: create user
-      command: useradd roboshop
+      command: add_user roboshop roboshop123
       when: user_output.rc != 0
