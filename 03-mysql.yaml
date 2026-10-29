@@ -16,12 +16,6 @@
         state: started
         enabled: yes
 
-      #Prerequisites pymysql for root passowrd of mysql
-    - name: Install PyMySQL python package
-      ansible.builtin.pip:
-        name: pymysql
-        state: present
-
     - name: setup MySQL root password
       ansible.mysql.mysql_user:
         name: root
