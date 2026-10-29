@@ -30,5 +30,5 @@
     #     msg: "{{ user_output }}"
 
     - name: create user
-      command: add_user roboshop roboshop123
+      command: useradd roboshop
       when: user_output.rc != 0
