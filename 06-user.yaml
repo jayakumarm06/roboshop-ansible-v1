@@ -2,28 +2,47 @@
   hosts: user
   become: yes
   tasks:
+    - name: disable default nodejs
+      command: dnf module disable nodejs -y
+
     - name: enable node-js 24
       command: dnf module enable nodejs:24 -y
 
-    - name: Install user
-      package:
+    - name: Install nodejs
+      dnf:
         name: nodejs
         state: present
 
-    - name: Create user
+    - name: Create roboshop system user
       user:
         name: roboshop
+        create_home: false
+        home: /app
+        system: true
+        shell: /sbin/nologin
+        comment: "roboshop system user"
 
-    - name: Create a directory if it doesnot exist
+    - name: remove existing app directory
+      file:
+        path: /app
+        state: absent
+
+    - name: remove user.zip
+      file:
+        path: /tmp/user.zip
+        state: absent
+
+    - name: create app directory
       file:
         path: /app
         state: directory
 
-    - name: Download zip file using curl
-      command: curl -L -o /tmp/user.zip https://raw.githubusercontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/user-v4.zip
-      creates: /tmp/user.zip
+    - name: Download user application
+      get_url:
+        url: https://raw.githubusercontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/user-v4.zip
+        dest: /tmp/user.zip
 
-    - name: unzip a file to a app folder
+    - name: unzip user
       unarchive:
         src: /tmp/user.zip
         dest: /app
@@ -32,31 +51,18 @@
     - name: Install user
       community.general.npm:
         path: /app
-        state: present
 
     - name: copy user service
-      copy:
-        src: user.service
+      template:
+        src: user.service.j2
         dest: /etc/systemd/system/user.service
 
-    - name: configure systemD serive for redis
-      lineinfile:
-        path: /etc/systemd/system/user.service
-        regexp: "^#?<REDIS-SERVER-IPADDRESS>"
-        line: "redis.dewsecopai.online"
-
-    - name: configure systemD serive for mongodb
-      lineinfile:
-        path: /etc/systemd/system/user.service
-        regexp: "^#?<MONGODB-SERVER-IPADDRESS>"
-        line: "mongodb.dewsecopai.online"
-
-    - name: force systemd to reload configuration
+    - name: deamon reload
       systemd_service:
         daemon_reload: true
 
     - name: start and enable user
       service:
         name: user
-        state: started
+        state: restarted
         enabled: yes
