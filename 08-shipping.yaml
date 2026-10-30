@@ -84,9 +84,9 @@
       debug:
         msg: "{{ cities_output }}"
 
-    # - name: load the cities
-    #   shell: mysql -h {{ mysql_host }} -uroot -pRoboShop@1 < /app/db/master-data.sql
-    #   when: cities_output.rc != 0
+    - name: load the cities
+      shell: mysql -h {{ mysql_host }} -uroot -pRoboShop@1 < /app/db/master-data.sql
+      when: cities_output.rc != 0
 
   # - name: force systemd to reload configuration
   #   systemd_service:
