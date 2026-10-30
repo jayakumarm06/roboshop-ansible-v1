@@ -46,7 +46,7 @@
       unarchive:
         src: /tmp/catalogue.zip
         dest: /app
-    #     remote_src: yes
+        remote_src: yes
 
     # - name: Install catalogue
     #   community.general.npm:
