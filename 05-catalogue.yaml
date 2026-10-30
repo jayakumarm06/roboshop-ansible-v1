@@ -76,6 +76,9 @@
       debug:
         msg: "{{ product_output }}"
 
+    - name: loads the products
+      shell: mongosh --host "{{ mongodb_host }}" </app/db/master-data.js
+      when: product_output.stdout == 0
     # - name: force systemd to reload configuration
     #   systemd_service:
     #     daemon_reload: true
