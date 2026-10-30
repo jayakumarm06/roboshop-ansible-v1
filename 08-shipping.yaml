@@ -69,12 +69,26 @@
         dest: /app
         remote_src: true
 
-    # - name: force systemd to reload configuration
-    #   systemd_service:
-    #     daemon_reload: true
+    - name: Install mysql client
+      dnf:
+        name: mysql
+        state: present
 
-    # - name: start and enable shipping
-    #   service:
-    #     name: shipping
-    #     state: started
-    #     enabled: yes
+      #first check the product load or not
+    - name: Check cities loaded or not
+      command: mysql -h {{ mysql_host }} -u root -pRoboShop@1 -N -B -e "SELECT COUNT(*) FROM cities.cities;"
+      register: cities_output
+
+    - name: Print cities_count
+      debug:
+        msg: "{{ cities_output }}"
+# mysql -h {{ mysql_host }} -u root -pRoboShop@1 -N -B -e "SELECT COUNT(*) FROM cities.cities;"
+# - name: force systemd to reload configuration
+#   systemd_service:
+#     daemon_reload: true
+
+# - name: start and enable shipping
+#   service:
+#     name: shipping
+#     state: started
+#     enabled: yes
