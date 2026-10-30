@@ -4,7 +4,8 @@ ansible_password: DevOps321
 mongodb_host: 172.31.5.95
 # redis_host: redis.dewsecopai.online
 redis_host: 172.31.12.38
-mysql_host: mysql.dewsecopai.online
+# mysql_host: mysql.dewsecopai.online
+mysql_host: 172.31.7.0
 rabbitmq_host: rabbitmq.dewsecopai.online
 # catalogue_host: catalogue.dewsecopai.online
 catalogue_host: 172.31.0.202
