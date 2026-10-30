@@ -10,86 +10,65 @@
         name:
           - maven
           - java-25-openjdk-devel
+          - maven-openjdk25 # installing this so that we no need to set JAVA_HOME again
         state: present
 
-    - name: Create JAVA_HOME path
-      shell: echo "export JAVA_HOME=$(dirname $(dirname $(readlink -f /usr/bin/java)))" > /etc/profile.d/java.sh
-
-    - name: Create user
+    - name: Create roboshop system user
       user:
         name: roboshop
+        create_home: false
+        home: /app
+        system: true
+        shell: /sbin/nologin
+        comment: "roboshop system user"
 
-    - name: Create a directory if it doesnot exist
+    - name: remove existing app directory
+      file:
+        path: /app
+        state: absent
+
+    - name: remove shipping.zip
+      file:
+        path: /tmp/shipping.zip
+        state: absent
+
+    - name: create app directory
       file:
         path: /app
         state: directory
 
-    - name: Download zip file using curl
-      command: curl -L -o /tmp/shipping.zip https://raw.githubusercontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/shipping-v4.zip
-      creates: /tmp/shipping.zip
+    - name: Download shipping application
+      get_url:
+        url: https://raw.githubusercontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/shipping-v4.zip
+        dest: /tmp/shipping.zip
 
-    - name: unzip a file to a app folder
+    - name: unzip shipping
       unarchive:
         src: /tmp/shipping.zip
         dest: /app
         remote_src: yes
 
-    - name: Build application
-      shell: mvn clean package
+    - name: mvn version without JAVA_HOME
+      command: mvn --version
       args:
         chdir: /app
+      register: mvn_default
 
-    - name: move jar
-      command: mv target/shipping.jar shipping.jar
-
-    - name: Install mysql
-      package:
-        name: mysql
-        state: present
-
-    - name: excecute make inside a target direcotry
-      command:
-        chdir: /app/db/master-data.sql
-
-    - name: Excute load-data using mysql
-      command: mysql -h mysql.dewsecopai.online -uroot -pRoboShop@1 < /app/db/master-data.sql
-      register: mysql_cities_output
-
-    - name: Show mysql cities output
+    - name: Print mvn version without JAVA_HOME
       debug:
-        msg: "{{ mysql_cities_output }}"
+        msg: "{{ mvn_default.stdout_lines }}"
 
-    - name: Excute load-data using mysql
-      command: mysql -h mysql.dewsecopai.online -uroot -pRoboShop@1 < /app/db/app-user.sql
-      register: mysql_output
+    # - name: Build application
+    #   shell: mvn clean package
+    #   args:
+    #     chdir: /app
 
-    - name: Show mysql output
-      debug:
-        msg: "{{ mysql_output }}"
+    # - name: force systemd to reload configuration
+    #   systemd_service:
+    #     daemon_reload: true
 
-    - name: copy shipping service
-      copy:
-        src: shipping.service
-        dest: /etc/systemd/system/shipping.service
-
-    - name: allow remote connections to service file
-      replace:
-        path: /etc/systemd/system/shipping.service
-        regexp: "<CART-SERVER-IPADDRESS>"
-        replace: "cart.dewsecopai.online"
-
-    - name: change the mysql domain_name in shipping service file
-      replace:
-        path: /etc/systemd/system/shipping.service
-        regexp: "<MYSQL-SERVER-IPADDRESS>"
-        replace: "mysql.dewsecopai.online"
-
-    - name: force systemd to reload configuration
-      systemd_service:
-        daemon_reload: true
-
-    - name: start and enable shipping
-      service:
-        name: shipping
-        state: started
-        enabled: yes
+    # - name: start and enable shipping
+    #   service:
+    #     name: shipping
+    #     state: started
+    #     enabled: yes
