@@ -7,8 +7,8 @@
         src: rabbitmq.repo
         dest: /etc/yum.repos.d/rabbitmq.repo
 
-    - name: Install erlang
-      package:
+    - name: Install rabbitmq server
+      dnf:
         name:
           - erlang
           - rabbitmq-server
@@ -19,19 +19,6 @@
         name: rabbitmq-server
         state: started
         enabled: yes
-
-    # - name: creat a user for application
-    #   command: rabbitmqctl add_user roboshop roboshop123
-    #   register: user_output
-    #   ignore_errors: true
-
-    # # - name: print the ouput
-    # #   debug:
-    # #     msg: "{{ user_output }}"
-
-    # - name: create user
-    #   command: useradd roboshop
-    #   when: user_output.rc != 0
 
     - name: Create RabbitMQ user
       community.rabbitmq.rabbitmq_user:
