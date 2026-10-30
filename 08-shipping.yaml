@@ -82,6 +82,7 @@
     - name: Print cities_count
       debug:
         msg: "{{ cities_output }}"
+      # when: cities_output.rc != 0
 # mysql -h {{ mysql_host }} -u root -pRoboShop@1 -N -B -e "SELECT COUNT(*) FROM cities.cities;"
 # - name: force systemd to reload configuration
 #   systemd_service:
