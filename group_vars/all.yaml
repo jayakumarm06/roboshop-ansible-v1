@@ -6,7 +6,8 @@ mongodb_host: 172.31.5.95
 redis_host: 172.31.12.38
 mysql_host: mysql.dewsecopai.online
 rabbitmq_host: rabbitmq.dewsecopai.online
-catalogue_host: catalogue.dewsecopai.online
+# catalogue_host: catalogue.dewsecopai.online
+catalogue_host: 172.31.0.202
 # user_host: user.dewsecopai.online
 user_host: 172.31.15.20
 # cart_host: cart.dewsecopai.online
