@@ -20,6 +20,7 @@
     # ansible-playbook roboshop.yaml -e '{"instances":["user"]}'
     # ansible-playbook roboshop.yaml -e '{"actions":"delete","instances":["user"]}'
     # ansible-playbook roboshop.yaml -e '{"instances":["cart"]}'
+    # ansible-playbook 07-cart.yaml -e "app_version=v4"
     # ansible-playbook roboshop.yaml -e '{"actions":"delete","instances":["cart"]}'
     # ansible-playbook roboshop.yaml -e '{"instances":["shipping"]}'
     # ansible-playbook roboshop.yaml -e '{"actions":"delete","instances":["shipping"]}'
