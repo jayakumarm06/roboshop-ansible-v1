@@ -58,10 +58,10 @@
       debug:
         msg: "{{ mvn_default.stdout_lines }}"
 
-    # - name: Build application
-    #   shell: mvn clean package
-    #   args:
-    #     chdir: /app
+    - name: Install dependencies and build application
+      shell: mvn clean package
+      args:
+        chdir: /app
 
     # - name: force systemd to reload configuration
     #   systemd_service:
