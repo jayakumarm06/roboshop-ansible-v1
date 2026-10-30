@@ -79,17 +79,13 @@
     - name: loads the products
       shell: mongosh --host "{{ mongodb_host }}" </app/db/master-data.js
       when: product_output.stdout | int == 0
-    # - name: force systemd to reload configuration
-    #   systemd_service:
-    #     daemon_reload: true
 
-    # - name: start and enable catalogue
-    #   service:
-    #     name: catalogue
-    #     state: started
-    #     enabled: yes
+    - name: deamon reload
+      systemd_service:
+        daemon_reload: true
 
-    # # - name: restart catalogue
-    # #   service:
-    # #     name: catalogue
-    # #     state: restarted
+    - name: start and enable catalogue
+      service:
+        name: catalogue
+        state: restarted
+        enabled: yes
