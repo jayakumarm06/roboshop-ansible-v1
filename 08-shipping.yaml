@@ -63,6 +63,12 @@
       args:
         chdir: /app
 
+    - name: Move Jar
+      copy:
+        src: target/shipping.jar
+        dest: /app/shipping.jar
+        remote_src: true
+
     # - name: force systemd to reload configuration
     #   systemd_service:
     #     daemon_reload: true
