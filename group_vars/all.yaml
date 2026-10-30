@@ -9,7 +9,8 @@ rabbitmq_host: rabbitmq.dewsecopai.online
 catalogue_host: catalogue.dewsecopai.online
 # user_host: user.dewsecopai.online
 user_host: 172.31.15.20
-cart_host: cart.dewsecopai.online
+# cart_host: cart.dewsecopai.online
+cart_host: 172.31.7.175
 shipping_host: shipping.dewsecopai.online
 payment_host: payment.dewsecopai.online
 dispatch_host: dispatch.dewsecopai.online
