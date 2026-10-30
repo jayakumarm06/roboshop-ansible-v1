@@ -84,14 +84,16 @@
       debug:
         msg: "{{ cities_output }}"
 
-      # when: cities_output.rc != 0
-# mysql -h {{ mysql_host }} -u root -pRoboShop@1 -N -B -e "SELECT COUNT(*) FROM cities.cities;"
-# - name: force systemd to reload configuration
-#   systemd_service:
-#     daemon_reload: true
+    - name: load the cities
+      shell: mysql -h {{ mysql_host }} -uroot -pRoboShop@1 < /app/db/master-data.sql
+      when: cities_output.rc != 0
 
-# - name: start and enable shipping
-#   service:
-#     name: shipping
-#     state: started
-#     enabled: yes
+  # - name: force systemd to reload configuration
+  #   systemd_service:
+  #     daemon_reload: true
+
+  # - name: start and enable shipping
+  #   service:
+  #     name: shipping
+  #     state: started
+  #     enabled: yes
