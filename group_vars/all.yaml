@@ -1,2 +1,13 @@
 ansible_user: ec2-user
 ansible_password: DevOps321
+mongodb_host: mongodb.dewsecopai.online
+redis_host: redis.dewsecopai.online
+mysql_host: mysql.dewsecopai.online
+rabbitmq_host: rabbitmq.dewsecopai.online
+catalogue_host: catalogue.dewsecopai.online
+user_host: user.dewsecopai.online
+cart_host: cart.dewsecopai.online
+shipping_host: shipping.dewsecopai.online
+payment_host: payment.dewsecopai.online
+dispatch_host: dispatch.dewsecopai.online
+frontend_host: frontend.dewsecopai.online
