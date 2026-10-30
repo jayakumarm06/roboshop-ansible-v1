@@ -12,7 +12,8 @@ catalogue_host: 172.31.0.202
 user_host: 172.31.15.20
 # cart_host: cart.dewsecopai.online
 cart_host: 172.31.7.175
-shipping_host: shipping.dewsecopai.online
+# shipping_host: shipping.dewsecopai.online
+shipping_host: 172.31.10.208
 payment_host: payment.dewsecopai.online
 dispatch_host: dispatch.dewsecopai.online
 frontend_host: frontend.dewsecopai.online
