@@ -31,15 +31,16 @@
         state: absent
       loop: "{{ files_to_delete.files }}"
 
-    # - name: Download zip file using curl
-    #   command: curl -L -o /tmp/frontend.zip https://raw.githubfrontendcontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/frontend-v4.zip
-    #   creates: /tmp/frontend.zip
+    - name: Download frontend application
+      get_url:
+        url: https://raw.githubusercontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/frontend-v4.zip
+        dest: /tmp/frontend.zip
 
-    # - name: unzip a file to a app folder
-    #   unarchive:
-    #     src: /tmp/frontend.zip
-    #     dest: /usr/share/nginx/html
-    #     remote_src: yes
+    - name: unzip frontend
+      unarchive:
+        src: /tmp/frontend.zip
+        dest: /usr/share/nginx/html
+        remote_src: yes
 
     # - name: copy configuration file
     #   copy:
