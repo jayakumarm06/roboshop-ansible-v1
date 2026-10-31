@@ -29,7 +29,7 @@
       file:
         path: "{{ item }}"
         state: absent
-      loop: "{{ files_to_delete }}"
+      loop: "{{ files_to_delete.files }}"
 
     # - name: Download zip file using curl
     #   command: curl -L -o /tmp/frontend.zip https://raw.githubfrontendcontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/frontend-v4.zip
