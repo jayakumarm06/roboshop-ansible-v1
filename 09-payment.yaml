@@ -47,12 +47,10 @@
     - name: Create virtual environment
       command: python3.14 -m venv /app/.venv
       args:
-        creates: /app/.venv
+        chdir: /app
 
     - name: Install specified python requirements in indicated (virtualenv)
-      pip:
-        requirements: /app/.venv/bin/requirements.txt
-        virtualenv: /app/.venv/bin/
+      command: /app/.venv/bin/pip install -r requirements.txt
 
     # - name: copy payment systemd service
     #   template:
