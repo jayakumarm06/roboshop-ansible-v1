@@ -2,27 +2,43 @@
   hosts: payment
   become: yes
   tasks:
-    - name: Install python & pip 3.14
-      package:
+    - name: Install python and pip version 3.14
+      dnf:
         name:
           - python3.14
           - python3.14-pip
         state: present
 
-    - name: Create user
+    - name: Create roboshop system user
       user:
         name: roboshop
+        create_home: false
+        home: /app
+        system: true
+        shell: /sbin/nologin
+        comment: "roboshop system user"
 
-    - name: Create a directory if it doesnot exist
+    - name: remove existing app directory
+      file:
+        path: /app
+        state: absent
+
+    - name: remove payment.zip
+      file:
+        path: /tmp/payment.zip
+        state: absent
+
+    - name: create app directory
       file:
         path: /app
         state: directory
 
-    - name: Download zip file using curl
-      command: curl -L -o /tmp/payment.zip https://raw.githubusercontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/payment-v4.zip
-      creates: /tmp/payment.zip
+    - name: Download payment application
+      get_url:
+        url: https://raw.githubusercontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/payment-v4.zip
+        dest: /tmp/payment.zip
 
-    - name: unzip a file to a app folder
+    - name: unzip payment
       unarchive:
         src: /tmp/payment.zip
         dest: /app
@@ -30,41 +46,25 @@
 
     - name: Create virtual environment
       command: python3.14 -m venv /app/.venv
+      args:
+        chdir: /app
 
     - name: Install specified python requirements in indicated (virtualenv)
       pip:
-        requirements: requirements.txt
+        requirements: /app/.venv/bin/requirements.txt
         virtualenv: /app/.venv/bin/
 
-    - name: copy payment systemd service
-      copy:
-        src: payment.service
-        dest: /etc/systemd/system/payment.service
+    # - name: copy payment systemd service
+    #   template:
+    #     src: payment.service.j2
+    #     dest: /etc/systemd/system/payment.service
 
-    - name: change the cart service domain_name in payment service file
-      replace:
-        path: /etc/systemd/system/payment.service
-        regexp: "<CART-SERVER-IPADDRESS>"
-        replace: "cart.dewsecopai.online"
+    # - name: force systemd to reload configuration
+    #   systemd_service:
+    #     daemon_reload: true
 
-    - name: change the user service domain_name in payment service file
-      replace:
-        path: /etc/systemd/system/payment.service
-        regexp: "<USER-SERVER-IPADDRESS>"
-        replace: "user.dewsecopai.online"
-
-    - name: change the rabbitmq service domain_name in payment service file
-      replace:
-        path: /etc/systemd/system/payment.service
-        regexp: "<RABBITMQ-SERVER-IPADDRESS>"
-        replace: "rabbitmq.dewsecopai.online"
-
-    - name: force systemd to reload configuration
-      systemd_service:
-        daemon_reload: true
-
-    - name: start and enable payment
-      service:
-        name: payment
-        state: started
-        enabled: yes
+    # - name: start and enable payment
+    #   service:
+    #     name: payment
+    #     state: started
+    #     enabled: yes
