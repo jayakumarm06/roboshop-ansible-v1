@@ -55,12 +55,12 @@
       args:
         chdir: /app
 
-    - name: Check files
-      command: ls -la /app
-      register: output
+    # - name: Check files
+    #   command: ls -la /app
+    #   register: output
 
-    - debug:
-        var: output.stdout_lines
+    # - debug:
+    #     var: output.stdout_lines
 
     - name: copy payment systemd service
       template:
