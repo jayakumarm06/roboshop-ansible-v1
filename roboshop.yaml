@@ -74,7 +74,7 @@
       loop: "{{ ec2_output.results }}"
       when:
         - actions == "create"
-        - item.item = "frontend"
+        - item.item == "frontend"
 
     - name: delete Route53 records
       amazon.aws.route53:
