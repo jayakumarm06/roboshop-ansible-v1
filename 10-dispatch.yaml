@@ -3,24 +3,40 @@
   become: yes
   tasks:
     - name: Install golang
-      package:
+      dnf:
         name: golang
         state: present
 
-    - name: Create user
+    - name: Create roboshop system user
       user:
         name: roboshop
+        create_home: false
+        home: /app
+        system: true
+        shell: /sbin/nologin
+        comment: "roboshop system user"
 
-    - name: Create a directory if it doesnot exist
+    - name: remove existing app directory
+      file:
+        path: /app
+        state: absent
+
+    - name: remove dispatch.zip
+      file:
+        path: /tmp/dispatch.zip
+        state: absent
+
+    - name: create app directory
       file:
         path: /app
         state: directory
 
-    - name: Download zip file using curl
-      command: curl -L -o /tmp/dispatch.zip https://raw.githubusercontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/dispatch-v4.zip
-      creates: /tmp/dispatch.zip
+    - name: Download dispatch application
+      get_url:
+        url: https://raw.githubusercontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/dispatch-v4.zip
+        dest: /tmp/dispatch.zip
 
-    - name: unzip a file to a app folder
+    - name: unzip dispatch
       unarchive:
         src: /tmp/dispatch.zip
         dest: /app
@@ -32,15 +48,9 @@
         chdir: /app
 
     - name: copy dispatch service
-      copy:
-        src: dispatch.service
+      template:
+        src: dispatch.service.j2
         dest: /etc/systemd/system/dispatch.service
-
-    - name: configure the systemd file
-      replace:
-        path: /etc/systemd/system/dispatch.service
-        regexp: "<RABBITMQ-SERVER-IPADDRESS>"
-        replace: "rabbitmq.dewsecopai.online"
 
     - name: force systemd to reload configuration
       systemd_service:
