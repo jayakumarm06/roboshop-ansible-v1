@@ -47,7 +47,7 @@
     - name: Create virtual environment
       command: python3.14 -m venv /app/.venv
       args:
-        chdir: /app
+        creates: /app/.venv
 
     - name: Install specified python requirements in indicated (virtualenv)
       pip:
