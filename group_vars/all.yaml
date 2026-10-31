@@ -5,7 +5,7 @@ mongodb_host: 172.31.5.95
 # redis_host: redis.dewsecopai.online
 redis_host: 172.31.12.38
 # mysql_host: mysql.dewsecopai.online
-mysql_host: 172.31.7.0
+mysql_host: 172.31.9.120
 rabbitmq_host: rabbitmq.dewsecopai.online
 # catalogue_host: catalogue.dewsecopai.online
 catalogue_host: 172.31.0.202
@@ -14,7 +14,7 @@ user_host: 172.31.15.20
 # cart_host: cart.dewsecopai.online
 cart_host: 172.31.7.175
 # shipping_host: shipping.dewsecopai.online
-shipping_host: 172.31.10.208
+shipping_host: 172.31.7.106
 # payment_host: payment.dewsecopai.online
 payment_host: 172.31.2.33
 dispatch_host: dispatch.dewsecopai.online
