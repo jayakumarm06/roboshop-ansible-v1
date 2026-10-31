@@ -18,5 +18,5 @@ shipping_host: 172.31.7.106
 # payment_host: payment.dewsecopai.online
 payment_host: 172.31.2.33
 # dispatch_host: dispatch.dewsecopai.online
-# dispatch_host:
+dispatch_host: 172.31.13.19
 frontend_host: frontend.dewsecopai.online
