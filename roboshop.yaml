@@ -84,7 +84,17 @@
         type: A
         ttl: 1
       loop: "{{ instances }}"
-      when: actions == "delete"
+      when: actions == "delete" and item != "frontend"
+
+    - name: delete Route53 records for frontend
+      amazon.aws.route53:
+        state: absent
+        zone: "{{ domain_name }}"
+        record: "{{ domain_name }}"
+        type: A
+        ttl: 1
+      loop: "{{ instances }}"
+      when: actions == "delete" and item == "frontend"
 
     - name: delete ec2 instances
       amazon.aws.ec2_instance:
