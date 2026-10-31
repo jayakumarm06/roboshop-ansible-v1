@@ -88,12 +88,17 @@
       shell: mysql -h {{ mysql_host }} -uroot -pRoboShop@1 < /app/db/master-data.sql
       when: cities_output.rc != 0
 
-  # - name: force systemd to reload configuration
-  #   systemd_service:
-  #     daemon_reload: true
+    - name: copy shipping service
+      template:
+        src: shipping.service.j2
+        dest: /etc/systemd/system/shipping.service
 
-  # - name: start and enable shipping
-  #   service:
-  #     name: shipping
-  #     state: started
-  #     enabled: yes
+    - name: force systemd to reload configuration
+      systemd_service:
+        daemon_reload: true
+
+    - name: start and enable shipping
+      service:
+        name: shipping
+        state: started
+        enabled: yes
