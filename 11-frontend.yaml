@@ -27,7 +27,7 @@
 
     - name: Remove all files
       file:
-        path: "{{ item }}"
+        path: "{{ item.path }}"
         state: absent
       loop: "{{ files_to_delete.files }}"
 
