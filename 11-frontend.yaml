@@ -2,11 +2,14 @@
   hosts: frontend
   become: yes
   tasks:
+    - name: disable default nginx
+      command: dnf module disable nginx -y
+
     - name: enable nginx 1.26
       command: dnf module enable nginx:1.26 -y
 
     - name: Install nginx
-      package:
+      dnf:
         name: nginx
         state: present
 
@@ -16,29 +19,34 @@
         state: started
         enabled: yes
 
-    - name: Remove all files
-      shell: rm -rf /usr/share/nginx/html/*
+    - name: find files
+      find:
+        paths: /usr/share/nginx/html/
+        file_type: any
+      register: files_to_delete
 
-    - name: Download zip file using curl
-      command: curl -L -o /tmp/frontend.zip https://raw.githubfrontendcontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/frontend-v4.zip
-      creates: /tmp/frontend.zip
+    # - name: Remove all files
+    #   file:
+    #     path: "{{ item.path }}"
+    #     state: absent
+    #   loop: "{{ files_to_delete.files }}"
 
-    - name: unzip a file to a app folder
-      unarchive:
-        src: /tmp/frontend.zip
-        dest: /usr/share/nginx/html
-        remote_src: yes
+    # - name: Download zip file using curl
+    #   command: curl -L -o /tmp/frontend.zip https://raw.githubfrontendcontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/frontend-v4.zip
+    #   creates: /tmp/frontend.zip
 
-    - name: copy configuration file
-      copy:
-        src: roboshop.conf
-        dest: /etc/nginx/default.d/roboshop.conf
+    # - name: unzip a file to a app folder
+    #   unarchive:
+    #     src: /tmp/frontend.zip
+    #     dest: /usr/share/nginx/html
+    #     remote_src: yes
 
-    ########################################
+    # - name: copy configuration file
+    #   copy:
+    #     src: roboshop.conf
+    #     dest: /etc/nginx/default.d/roboshop.conf
 
-    ###################################################
-
-    - name: restart nginx
-      service:
-        name: nginx
-        state: restarted
+    # - name: restart nginx
+    #   service:
+    #     name: nginx
+    #     state: restarted
