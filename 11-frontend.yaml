@@ -42,12 +42,16 @@
         dest: /usr/share/nginx/html
         remote_src: yes
 
-    # - name: copy configuration file
-    #   copy:
-    #     src: roboshop.conf
-    #     dest: /etc/nginx/default.d/roboshop.conf
+    - name: copy frontend configuration service
+      template:
+        src: roboshop.conf.j2
+        dest: /etc/nginx/default.d/roboshop.conf
 
-    # - name: restart nginx
-    #   service:
-    #     name: nginx
-    #     state: restarted
+    - name: Validate nginx config
+      command: nginx -t
+      changed_when: false
+
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
