@@ -89,7 +89,7 @@
       shell: mysql -h {{ mysql_host }} -uroot -pRoboShop@1 < /app/db/master-data.sql
       when: cities_output.rc != 0 or cities_output.stdout | int == 0
 
-    - name: load the cities
+    - name: load the app-user
       shell: mysql -h {{ mysql_host }} -uroot -pRoboShop@1 < /app/db/app-user.sql
 
     - name: copy shipping service
