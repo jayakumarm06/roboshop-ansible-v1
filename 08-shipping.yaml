@@ -79,14 +79,15 @@
       command: mysql -h {{ mysql_host }} -u root -pRoboShop@1 -N -B -e "SELECT COUNT(*) FROM cities.cities;"
       register: cities_output
       ignore_errors: true
+      changed_when: false
 
     - name: Print cities_count
       debug:
-        msg: "{{ cities_output }}"
+        msg: "{{ cities_output.stdout }}"
 
     - name: load the cities
       shell: mysql -h {{ mysql_host }} -uroot -pRoboShop@1 < /app/db/master-data.sql
-      when: cities_output.rc != 0
+      when: cities_output.rc != 0 or cities_output.stdout | int == 0
 
     - name: copy shipping service
       template:
