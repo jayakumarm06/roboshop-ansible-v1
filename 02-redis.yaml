@@ -19,8 +19,8 @@
     - name: disable protected mode
       lineinfile:
         path: /etc/redis/redis.conf
-        regexp: "^#?protected-mode yes"
-        line: "protected-mode no"
+        regexp: "^#?protected-mode no"
+        line: "protected-mode yes"
 
     - name: start and enable redis
       service:
