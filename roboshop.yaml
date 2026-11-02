@@ -13,7 +13,20 @@
     # ansible-playbook roboshop.yaml -e '{"instances":["rabbitmq"]}'
     # ansible-playbook roboshop.yaml -e '{"actions":"delete","instances":["rabbitmq"]}'
 
-    instances: ["mongodb", "redis", "mysql", "rabbitmq"]
+    instances:
+      [
+        "mongodb",
+        "redis",
+        "mysql",
+        "rabbitmq",
+        "catalogue",
+        "user",
+        "cart",
+        "shipping",
+        "payment",
+        "dispatch",
+        "frontend",
+      ]
     #ansible-playbook roboshop.yaml -e '{"instances":["catalogue"]}'
     # ansible-playbook roboshop.yaml -e actions="delete" -e '{"instances":["catalogue"]}'
     # ansible-playbook roboshop.yaml -e '{"actions":"delete","instances":["catalogue"]}'
@@ -59,8 +72,7 @@
         value: "{{ item.instances[0].private_ip_address }}"
         overwrite: true
       loop: "{{ ec2_output.results }}"
-      when: actions == "create" and item.item != "frontend"
-
+      when: actions == "create"
       #this is for fortend
     - name: create Route53 record for frontend
       amazon.aws.route53:
@@ -84,7 +96,7 @@
         type: A
         ttl: 1
       loop: "{{ instances }}"
-      when: actions == "delete" and item != "frontend"
+      when: actions == "delete"
 
     - name: delete Route53 records for frontend
       amazon.aws.route53:
@@ -94,7 +106,7 @@
         type: A
         ttl: 1
       loop: "{{ instances }}"
-      when: actions == "delete" and item == "frontend"
+      when: actions == "delete"
 
     - name: delete ec2 instances
       amazon.aws.ec2_instance:
