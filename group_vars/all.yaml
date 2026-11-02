@@ -21,3 +21,8 @@ dispatch_host: dispatch.dewsecopai.online
 # dispatch_host: 172.31.13.19
 frontend_host: frontend.dewsecopai.online
 # frontend_host: 98.92.199.113
+mysql_root_password: RoboShop@1
+shipping_db_user: shipping
+shipping_db_password: RoboShop@1
+rabbitmq_user: roboshop
+rabbitmq_password: roboshop123

@@ -11,6 +11,7 @@
           - maven
           - java-25-openjdk-devel
           - maven-openjdk25 # installing this so that we no need to set JAVA_HOME again
+          - mysql
         state: present
 
     - name: Create roboshop system user
@@ -63,34 +64,32 @@
       args:
         chdir: /app
 
-    - name: Move Jar
-      copy:
-        src: /app/target/shipping.jar
-        dest: /app
-        remote_src: true
-
-    - name: Install mysql client
-      dnf:
-        name: mysql
-        state: present
+    # - name: Move Jar
+    #   copy:
+    #     src: /app/target/shipping.jar
+    #     dest: /app
+    #     remote_src: true
+    - name: move shipping jar file
+      command: mv target/shipping.jar shipping.jar
+      args:
+        chdir: /app
 
       #first check the product load or not
-    - name: Check cities loaded or not
-      command: mysql -h {{ mysql_host }} -u root -pRoboShop@1 -N -B -e "SELECT COUNT(*) FROM cities.cities;"
+    - name: Check cities loaded data exist or not
+      command: mysql -h {{ mysql_host }} -u root -p{{ mysql_root_password }} -N -B -e "SELECT COUNT(*) FROM cities.cities;"
       register: cities_output
       ignore_errors: true
-      changed_when: false
 
     - name: Print cities_count
       debug:
         msg: "{{ cities_output.stdout }}"
 
-    - name: load the cities
-      shell: mysql -h {{ mysql_host }} -uroot -pRoboShop@1 < /app/db/master-data.sql
+    - name: load the cities in mysql
+      shell: mysql -h {{ mysql_host }} -u root -p{{ mysql_root_password }} < /app/db/master-data.sql
       when: cities_output.rc != 0 or cities_output.stdout | int == 0
 
-    - name: load the app-user
-      shell: mysql -h {{ mysql_host }} -uroot -pRoboShop@1 < /app/db/app-user.sql
+    - name: create app-user in mysql
+      shell: mysql -h {{ mysql_host }} -u root -p{{ mysql_root_password }} < /app/db/app-user.sql
 
     - name: copy shipping service
       template:

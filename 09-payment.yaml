@@ -44,23 +44,11 @@
         dest: /app
         remote_src: yes
 
-    - name: Create virtual environment
-      command: python3.14 -m venv /app/.venv
-      args:
-        chdir: /app
-        creates: /app/.venv
-
-    - name: Install specified python requirements in indicated (virtualenv)
-      command: /app/.venv/bin/pip3.14 install -r requirements.txt
-      args:
-        chdir: /app
-
-    # - name: Check files
-    #   command: ls -la /app
-    #   register: output
-
-    # - debug:
-    #     var: output.stdout_lines
+    - name: install dependencies in virtual environment
+      ansible.builtin.pip:
+        requirements: /app/requirements.txt
+        virtualenv: /app/.venv
+        virtualenv_command: python3.14 -m venv
 
     - name: copy payment systemd service
       template:
