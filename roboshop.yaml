@@ -78,7 +78,7 @@
       amazon.aws.route53:
         state: present
         zone: "{{ domain_name }}"
-        record: "{{ domain_name }}" # dewsecopai.online
+        record: "{{ domain_name }}" # dewsecopai.online points to frontend public ip
         type: A
         ttl: 1
         value: "{{ item.instances[0].public_ip_address }}"
