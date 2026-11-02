@@ -5,8 +5,8 @@ After=network-online.target
 [Service]
 User=roboshop
 Environment=AMQP_HOST={{ rabbitmq_host }}
-Environment=AMQP_USER=roboshop
-Environment=AMQP_PASS=roboshop123
+Environment=AMQP_USER={{ rabbitmq_user }}
+Environment=AMQP_PASS={{ rabbitmq_password }}
 ExecStart=/app/dispatch
 SyslogIdentifier=dispatch
 Restart=on-failure
