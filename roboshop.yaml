@@ -24,7 +24,6 @@
         "cart",
         "shipping",
         "payment",
-        "dispatch",
         "frontend",
       ]
     #ansible-playbook roboshop.yaml -e '{"instances":["catalogue"]}'
